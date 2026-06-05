@@ -1,0 +1,96 @@
+[
+  {
+    "id": "pitchfork-party-with-feng",
+    "source": "pitchfork",
+    "title": "Party With Feng",
+    "url": "https://pitchfork.com/thepitch/party-with-feng/",
+    "published_date": "2025-09-18",
+    "article_type": "profile"
+  },
+  {
+    "id": "fader-uk-underground-timeline",
+    "source": "the_fader",
+    "title": "9 key moments in the rise of U.K. rap's new underground",
+    "url": "https://www.thefader.com/2025/06/06/uk-rap-underground-timeline-key-artists-fakemink-yt",
+    "published_date": "2025-06-06",
+    "article_type": "feature",
+    "extract_mode": "full_article"
+  },
+  {
+    "id": "complex-best-teenage-rappers",
+    "source": "complex",
+    "title": "The 13 Best Teenage Rappers Right Now: 2025 Rankings",
+    "url": "https://www.complex.com/music/a/dimassanfiorenzo/best-teenage-rappers-right-now-2025-rankings",
+    "published_date": "2025-08-28",
+    "article_type": "list",
+    "extract_mode": "section_heading",
+    "section_heading": "Feng"
+  },
+  {
+    "id": "guardian-uk-underground-explosion",
+    "source": "the_guardian",
+    "title": "Constant stimulation, dopamine overload: how EsDeeKid and UK underground rap exploded on a global scale",
+    "url": "https://www.theguardian.com/music/2025/dec/05/constant-stimulation-dopamine-overload-esdeekid-uk-underground-rap-exploded-global-scale",
+    "published_date": "2025-12-05",
+    "article_type": "feature"
+  },
+  {
+    "id": "fader-artists-to-watch-2026",
+    "source": "the_fader",
+    "title": "Artists to watch in 2026: Feng, Dove Ellis, Sofia Isella, and more",
+    "url": "https://www.thefader.com/2025/12/23/artists-to-watch-2026-dove-ellis-ear-absolutely",
+    "published_date": "2025-12-23",
+    "article_type": "list",
+    "extract_mode": "mention_block",
+    "mention_keyword": "Feng"
+  },
+  {
+    "id": "dazed-new-year-new-feng",
+    "source": "dazed",
+    "title": "A night out with Feng, the 'positive punk' of UK Ug",
+    "url": "https://www.dazeddigital.com/music/article/69391/1/new-year-same-feng-uk-ug-croydon-london-rap-cali-crazy-interview",
+    "published_date": "2026-01-12",
+    "article_type": "profile"
+  },
+  {
+    "id": "pitchfork-weekend-rockstar-announcement",
+    "source": "pitchfork",
+    "title": "Feng Announces Debut Album Weekend Rockstar",
+    "url": "https://pitchfork.com/news/feng-announces-debut-album-weekend-rockstar/",
+    "published_date": "2026-02-11",
+    "article_type": "news"
+  },
+  {
+    "id": "nme-weekend-rockstar-review",
+    "source": "nme",
+    "title": "Feng – 'Weekend Rockstar' review",
+    "url": "https://www.nme.com/reviews/album/feng-weekend-rockstar-review-3930229",
+    "published_date": "2026-02-13",
+    "article_type": "review",
+    "score": 60
+  },
+  {
+    "id": "state-hornet-weekend-rockstar-review",
+    "source": "state_hornet",
+    "title": "Feng's 'Weekend Rockstar' is a sonically-televised teen angst manifesto",
+    "url": "https://statehornet.com/2026/02/feng-uk-underground-pop-rap-album-review-fakemink-london/",
+    "published_date": "2026-02-13",
+    "article_type": "review"
+  },
+  {
+    "id": "pitchfork-weekend-rockstar-review",
+    "source": "pitchfork",
+    "title": "Feng: Weekend Rockstar",
+    "url": "https://pitchfork.com/reviews/albums/feng-weekend-rockstar/",
+    "published_date": "2026-02-18",
+    "article_type": "review"
+  },
+  {
+    "id": "substack-what-happened-to-feng",
+    "source": "substack",
+    "title": "What Happened to Feng?",
+    "url": "https://tribe17.substack.com/p/what-happened-to-feng",
+    "published_date": "2026-02-20",
+    "article_type": "essay"
+  }
+]
