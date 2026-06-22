@@ -38,7 +38,7 @@ Everything hinges on a clean before/after division.
 
 **Where to look:**
 
-- Feng's own subreddit (name TBD; need to find exact name by browsing Reddit directly)
+- Feng's own subreddit: **r/fengeveryday**
 - r/ukrap, r/ukhiphopheads, r/hiphopheads
 - Search across all of Reddit for "Feng" + "rapper" OR "Weekend Rockstar" OR "What the Feng"
 
@@ -53,9 +53,10 @@ Everything hinges on a clean before/after division.
 
 **Access method:**
 
-- PRAW (Python Reddit API Wrapper) — free for research, 60 req/min
-- Backup: append `.json` to old.reddit.com URLs
-- Limitation: Reddit caps at ~1,000 most recent posts per listing endpoint. For Feng this is probably fine (not a massive subreddit). Supplement with search across r/ukrap etc.
+- old.reddit.com HTML scraper (no official API credentials)
+- Parses listing pages and comment threads with BeautifulSoup
+- Backup fetch via curl_cffi if Reddit returns 403 to plain requests
+- Limitation: Reddit caps pagination at ~1,000 most recent posts per listing endpoint. Supplement with global search.
 
 **Estimated volume:** 200-800 posts/comments mentioning Feng across all subreddits. Possibly more if the subreddit is active.
 
@@ -394,7 +395,7 @@ Beyond sentiment polarity, we need to extract what people are actually talking a
 | 3-4 | Build YouTube collector. Get all video metadata + top comments per video                   | Video stats + 3K-12K comments in JSON |
 | 4-5 | TikTok collection via Apify. Target Feng's posts, fan pages, controversy threads           | 2K-5K comments in JSON                |
 | 5   | Fetch all press review articles. Store full text                                           | ~10 articles in JSON                  |
-| 5   | Find Feng's subreddit name (browse Reddit directly)                                        | Confirmed subreddit                   |
+| 5   | Find Feng's subreddit name (browse Reddit directly)                                        | r/fengeveryday                        |
 
 ### Week 2: Labeling & Ground Truth
 

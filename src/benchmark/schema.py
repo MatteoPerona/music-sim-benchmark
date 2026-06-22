@@ -41,6 +41,28 @@ class BenchmarkItem:
         return cls(**data)
 
 
+def make_reddit_item(
+    *,
+    item_id: str,
+    text: str,
+    timestamp: datetime,
+    url: str,
+    author_id: str | None,
+    score: float | None,
+    metadata: dict[str, Any],
+) -> BenchmarkItem:
+    return BenchmarkItem(
+        id=item_id,
+        source="reddit",
+        text=text,
+        timestamp=timestamp.replace(tzinfo=None).isoformat() + "Z",
+        url=url,
+        author_id=author_id,
+        score=score,
+        metadata=metadata,
+    )
+
+
 def make_aoty_item(
     *,
     item_id: str,

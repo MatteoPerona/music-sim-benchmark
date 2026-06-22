@@ -1,0 +1,69 @@
+{
+  "subreddits": [
+    {
+      "name": "ukrap",
+      "collect_mode": "search",
+      "queries": ["Feng", "Weekend Rockstar", "What the Feng", "What The Feng"],
+      "listing_sorts": ["new", "top"],
+      "top_time_filter": "all",
+      "max_pages": 10
+    },
+    {
+      "name": "ukhiphopheads",
+      "collect_mode": "search",
+      "queries": ["Feng", "Weekend Rockstar", "What the Feng", "What The Feng"],
+      "listing_sorts": ["new", "top"],
+      "top_time_filter": "all",
+      "max_pages": 10
+    },
+    {
+      "name": "hiphopheads",
+      "collect_mode": "search",
+      "queries": ["Feng rapper", "Feng Weekend Rockstar", "Feng What the Feng"],
+      "listing_sorts": ["new", "top"],
+      "top_time_filter": "year",
+      "max_pages": 10
+    },
+    {
+      "name": "fengeveryday",
+      "collect_mode": "all",
+      "listing_sorts": ["hot", "top", "new"],
+      "top_time_filter": "all",
+      "max_pages": 40
+    }
+  ],
+  "global_searches": [
+    {
+      "query": "Feng rapper",
+      "sort": "new",
+      "time_filter": "all"
+    },
+    {
+      "query": "Weekend Rockstar Feng",
+      "sort": "new",
+      "time_filter": "all"
+    },
+    {
+      "query": "\"What the Feng\"",
+      "sort": "new",
+      "time_filter": "all"
+    },
+    {
+      "query": "Feng CTI manager",
+      "sort": "new",
+      "time_filter": "all"
+    }
+  ],
+  "relevance_keywords": [
+    "feng",
+    "weekend rockstar",
+    "what the feng",
+    "what the feng?",
+    "cali crazy",
+    "fakemink",
+    "cti"
+  ],
+  "max_submissions_per_source": 1000,
+  "max_comments_per_submission": 200,
+  "include_comment_replies": true
+}

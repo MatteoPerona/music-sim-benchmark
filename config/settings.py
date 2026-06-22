@@ -17,6 +17,9 @@ AOTY_MANIFEST = PROJECT_ROOT / "config" / "aoty_albums.json"
 AOTY_RAW_DIR = RAW_DIR / "aoty"
 AOTY_BASE_URL = "https://www.albumoftheyear.org"
 
+REDDIT_MANIFEST = PROJECT_ROOT / "config" / "reddit_sources.json"
+REDDIT_RAW_DIR = RAW_DIR / "reddit"
+
 USER_AGENT = (
     "music-sim-benchmark/0.1 (+https://github.com/opi; research data collection)"
 )
