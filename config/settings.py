@@ -13,6 +13,10 @@ CUTOFF_DATETIME = datetime(2026, 2, 13, tzinfo=timezone.utc)
 PRESS_MANIFEST = PROJECT_ROOT / "config" / "press_articles.json"
 PRESS_RAW_DIR = RAW_DIR / "press"
 
+AOTY_MANIFEST = PROJECT_ROOT / "config" / "aoty_albums.json"
+AOTY_RAW_DIR = RAW_DIR / "aoty"
+AOTY_BASE_URL = "https://www.albumoftheyear.org"
+
 USER_AGENT = (
     "music-sim-benchmark/0.1 (+https://github.com/opi; research data collection)"
 )

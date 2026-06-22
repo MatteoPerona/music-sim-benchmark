@@ -1,0 +1,23 @@
+[
+  {
+    "id": "what-the-feng",
+    "album_id": 1217461,
+    "title": "What The Feng",
+    "artist": "Feng",
+    "release_date": "2025-02-14",
+    "user_reviews_url": "https://www.albumoftheyear.org/album/1217461-feng-what-the-feng/user-reviews/",
+    "album_page_url": "https://www.albumoftheyear.org/album/1217461-feng-what-the-feng.php",
+    "expected_user_score": 72
+  },
+  {
+    "id": "weekend-rockstar",
+    "album_id": 1446046,
+    "title": "Weekend Rockstar",
+    "artist": "Feng",
+    "release_date": "2026-02-13",
+    "user_reviews_url": "https://www.albumoftheyear.org/album/1446046-feng-weekend-rockstar/user-reviews/",
+    "album_page_url": "https://www.albumoftheyear.org/album/1446046-feng-weekend-rockstar.php",
+    "expected_user_score": 49,
+    "expected_critic_score": 59
+  }
+]
