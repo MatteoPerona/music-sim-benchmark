@@ -6,6 +6,7 @@ import json
 import math
 import re
 import time
+from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,9 +23,9 @@ from config.settings import AOTY_BASE_URL, AOTY_MANIFEST, AOTY_RAW_DIR
 from src.benchmark.schema import BenchmarkItem, make_aoty_item
 from src.benchmark.temporal import tag_item
 
-REQUEST_DELAY_SECONDS = 0.75
+REQUEST_DELAY_SECONDS = 1.25
 REVIEWS_PER_PAGE = 25
-IMPERSONATE = "chrome120"
+IMPERSONATE = "chrome131"
 MAX_RETRIES = 6
 
 
@@ -242,6 +243,7 @@ def collect_user_reviews(
     *,
     delay_seconds: float = REQUEST_DELAY_SECONDS,
     output_dir: Path | None = None,
+    fetch_exact_dates: bool = True,
 ) -> list[BenchmarkItem]:
     base_url = album["user_reviews_url"]
     album_id = album["album_id"]
@@ -282,12 +284,25 @@ def collect_user_reviews(
             items.append(item)
             continue
 
-        time.sleep(delay_seconds)
-        reviewed_at = _fetch_exact_review_date(
-            session,
-            review_url,
-            fallback_relative_date=listing.relative_date,
-        )
+        if fetch_exact_dates:
+            time.sleep(delay_seconds)
+            reviewed_at = _fetch_exact_review_date(
+                session,
+                review_url,
+                fallback_relative_date=listing.relative_date,
+            )
+            date_source = "review_page"
+        elif listing.relative_date:
+            reviewed_at = _parse_relative_date_text(listing.relative_date)
+            date_source = "listing_relative"
+        else:
+            time.sleep(delay_seconds)
+            reviewed_at = _fetch_exact_review_date(
+                session,
+                review_url,
+                fallback_relative_date=listing.relative_date,
+            )
+            date_source = "review_page"
 
         review_key = listing.review_id or listing.username
         item = make_aoty_item(
@@ -306,6 +321,7 @@ def collect_user_reviews(
                 "review_id": listing.review_id,
                 "likes": listing.likes,
                 "relative_date": listing.relative_date,
+                "date_source": date_source,
             },
         )
         item = tag_item(item)
@@ -326,9 +342,17 @@ def _parse_album_scores(soup: BeautifulSoup) -> dict[str, Any]:
     if user_el:
         match = re.search(r"\d+", user_el.get_text(strip=True))
         scores["user_score"] = int(match.group()) if match else None
+        count_match = re.search(r"\(([\d,]+)\)", user_el.get_text(strip=True))
+        if count_match:
+            scores["user_review_count_displayed"] = int(count_match.group(1).replace(",", ""))
     if critic_el:
         match = re.search(r"\d+", critic_el.get_text(strip=True))
         scores["critic_score"] = int(match.group()) if match else None
+
+    genre_els = soup.select(".albumGenres a, .genre a, a.genre")
+    genres = [el.get_text(strip=True) for el in genre_els if el.get_text(strip=True)]
+    if genres:
+        scores["genres"] = genres
 
     for script in soup.find_all("script", type="application/ld+json"):
         try:
@@ -337,6 +361,9 @@ def _parse_album_scores(soup: BeautifulSoup) -> dict[str, Any]:
             continue
         if payload.get("@type") == "MusicAlbum":
             scores["release_date"] = payload.get("datePublished")
+            genre = payload.get("genre")
+            if genre:
+                scores["genres"] = genre if isinstance(genre, list) else [genre]
             rating = payload.get("aggregateRating") or {}
             if rating.get("name") == "Critic Score":
                 scores["critic_score"] = int(float(rating.get("ratingValue")))
@@ -419,11 +446,117 @@ def collect_critic_reviews(
     return items
 
 
+def parse_user_rated_albums(soup: BeautifulSoup) -> list[dict[str, Any]]:
+    """Extract album ratings from an AOTY user profile page."""
+    albums: list[dict[str, Any]] = []
+    seen: set[int] = set()
+
+    for row in soup.select(".ratingRow, .userRatingRow, tr[data-album-id]"):
+        link = row.select_one("a[href*='/album/']")
+        if not link:
+            continue
+        href = link.get("href", "")
+        match = re.search(r"/album/(\d+)-([^/.]+)", href)
+        if not match:
+            continue
+        album_id = int(match.group(1))
+        if album_id in seen:
+            continue
+        seen.add(album_id)
+
+        title_el = row.select_one(".albumTitle, .title, a[href*='/album/']")
+        rating_el = row.select_one(".rating, .ratingBlock .rating, .userRating")
+        score = None
+        if rating_el:
+            score_match = re.search(r"\d+", rating_el.get_text(strip=True))
+            score = int(score_match.group()) if score_match else None
+
+        albums.append(
+            {
+                "album_id": album_id,
+                "slug": match.group(2),
+                "title": title_el.get_text(strip=True) if title_el else match.group(2),
+                "score": score,
+                "url": urljoin(AOTY_BASE_URL, href),
+            }
+        )
+
+    if albums:
+        return albums
+
+    for link in soup.select("a[href*='/album/'][href$='.php']"):
+        href = link.get("href", "")
+        if "/user/" in href:
+            continue
+        match = re.search(r"/album/(\d+)-([^/.]+)\.php", href)
+        if not match:
+            continue
+        album_id = int(match.group(1))
+        if album_id in seen:
+            continue
+        seen.add(album_id)
+        albums.append(
+            {
+                "album_id": album_id,
+                "slug": match.group(2),
+                "title": link.get_text(strip=True) or match.group(2),
+                "score": None,
+                "url": urljoin(AOTY_BASE_URL, href),
+            }
+        )
+    return albums
+
+
+def fetch_user_rated_albums(
+    session: curl_requests.Session,
+    username: str,
+    *,
+    delay_seconds: float = REQUEST_DELAY_SECONDS,
+) -> list[dict[str, Any]]:
+    url = f"{AOTY_BASE_URL}/user/{username}/"
+    time.sleep(delay_seconds)
+    html = fetch_html(session, url)
+    return parse_user_rated_albums(BeautifulSoup(html, "lxml"))
+
+
+def snowball_albums_from_users(
+    usernames: list[str],
+    *,
+    delay_seconds: float = REQUEST_DELAY_SECONDS,
+    exclude_album_ids: set[int] | None = None,
+) -> list[dict[str, Any]]:
+    """Count how often seed-scene reviewers rated each album elsewhere on AOTY."""
+    exclude = exclude_album_ids or set()
+    session = _session()
+    counts: Counter[int] = Counter()
+    album_meta: dict[int, dict[str, Any]] = {}
+
+    for index, username in enumerate(usernames):
+        if index:
+            time.sleep(delay_seconds)
+        try:
+            rated = fetch_user_rated_albums(session, username, delay_seconds=0)
+        except Exception:
+            continue
+        for entry in rated:
+            album_id = entry["album_id"]
+            if album_id in exclude:
+                continue
+            counts[album_id] += 1
+            album_meta.setdefault(album_id, entry)
+
+    ranked = []
+    for album_id, user_count in counts.most_common():
+        ranked.append({**album_meta[album_id], "overlap_users": user_count})
+    return ranked
+
+
 def collect_album(
     session: curl_requests.Session,
     album: dict[str, Any],
     *,
     delay_seconds: float = REQUEST_DELAY_SECONDS,
+    fetch_exact_dates: bool = True,
 ) -> dict[str, Any]:
     output_dir = AOTY_RAW_DIR / album["id"]
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -433,6 +566,7 @@ def collect_album(
         album,
         delay_seconds=delay_seconds,
         output_dir=output_dir,
+        fetch_exact_dates=fetch_exact_dates,
     )
     time.sleep(delay_seconds)
 
@@ -478,11 +612,16 @@ def collect_aoty(
     manifest_path: Path = AOTY_MANIFEST,
     album_ids: list[str] | None = None,
     delay_seconds: float = REQUEST_DELAY_SECONDS,
+    fetch_exact_dates: bool = True,
+    skip_album_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     AOTY_RAW_DIR.mkdir(parents=True, exist_ok=True)
     manifest = load_manifest(manifest_path)
     if album_ids:
         manifest = [album for album in manifest if album["id"] in album_ids]
+    if skip_album_ids:
+        skip = set(skip_album_ids)
+        manifest = [album for album in manifest if album["id"] not in skip]
 
     session = _session()
     results: dict[str, Any] = {}
@@ -491,7 +630,12 @@ def collect_aoty(
     for index, album in enumerate(manifest):
         if index:
             time.sleep(delay_seconds)
-        result = collect_album(session, album, delay_seconds=delay_seconds)
+        result = collect_album(
+            session,
+            album,
+            delay_seconds=delay_seconds,
+            fetch_exact_dates=fetch_exact_dates,
+        )
         results[album["id"]] = result
         all_reviews.extend(result["user_reviews"])
         all_reviews.extend(result["critic_reviews"])

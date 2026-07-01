@@ -26,12 +26,28 @@ def main() -> int:
     parser.add_argument(
         "--delay",
         type=float,
-        default=0.75,
-        help="Seconds between HTTP requests (default: 0.75).",
+        default=1.25,
+        help="Seconds between HTTP requests (default: 1.25).",
+    )
+    parser.add_argument(
+        "--listing-dates-only",
+        action="store_true",
+        help="Use listing relative dates instead of fetching each review page (much faster).",
+    )
+    parser.add_argument(
+        "--skip-album",
+        action="append",
+        dest="skip_albums",
+        help="Album slug to skip (repeatable). Useful to avoid re-collecting completed albums.",
     )
     args = parser.parse_args()
 
-    payload = collect_aoty(album_ids=args.albums, delay_seconds=args.delay)
+    payload = collect_aoty(
+        album_ids=args.albums,
+        delay_seconds=args.delay,
+        fetch_exact_dates=not args.listing_dates_only,
+        skip_album_ids=args.skip_albums,
+    )
     summary = summarize_collection(payload)
 
     print(f"Wrote combined bundle -> {payload['combined_path']}")
